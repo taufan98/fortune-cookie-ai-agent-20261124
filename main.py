@@ -15,12 +15,20 @@ LINE = (
     "saying 'just one more tweak'."
 )
 
-# The gate requires 1-140 characters of non-whitespace UTF-8 text.
+# The gate requires 1-140 characters of non-whitespace UTF-8 text, on one
+# line, so keep the limit as a named constant and check the exact text that
+# will be judged (the file's content without its trailing newline).
+MAX_CHARS = 140
+
 stripped = LINE.strip()
-if not 1 <= len(stripped) <= 140:
-    raise SystemExit(f"entry line must be 1-140 characters, got {len(LINE)}")
+if not 1 <= len(stripped) <= MAX_CHARS:
+    raise SystemExit(
+        f"entry line must be 1-{MAX_CHARS} characters, got {len(LINE)}"
+    )
 if "\n" in stripped or "\r" in stripped:
     raise SystemExit("entry line must be a single line")
+if stripped != LINE:
+    raise SystemExit("entry line must not start or end with whitespace")
 
 out_dir = Path(os.environ.get("MAKEFUN_OUTPUT_DIR", "/output"))
 out_dir.mkdir(parents=True, exist_ok=True)
